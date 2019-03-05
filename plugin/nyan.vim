@@ -1,9 +1,15 @@
 let s:dir = expand('<sfile>:h:h') . '/data'
 let s:index = 0
 let s:images = []
+let s:offset = get(g:, 'nyancat_offset', 0)
 
 function! s:nyan(...)
-  call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, &columns-7)], "/dev/tty", "b")
+  if s:offset > 0
+    let l:col = s:offset
+  else
+    let l:col = &columns - 7 + s:offset
+  endif
+  call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "/dev/tty", "b")
   call writefile(s:images[s:index % len(s:images)], "/dev/tty", "b")
   call writefile(["\x1b[u"], "/dev/tty", "b")
   let s:index += 1
