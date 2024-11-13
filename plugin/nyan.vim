@@ -9,9 +9,15 @@ function! s:nyan(...)
   else
     let l:col = &columns - 7 + s:offset
   endif
-  call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "/dev/tty", "b")
-  call writefile(s:images[s:index % len(s:images)], "/dev/tty", "b")
-  call writefile(["\x1b[u"], "/dev/tty", "b")
+  if has('win32')
+    call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "CONOUT$", "b")
+    call writefile(s:images[s:index % len(s:images)], "CONOUT$", "b")
+    call writefile(["\x1b[u"], "CONOUT$", "b")
+  else
+    call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "/dev/tty", "b")
+    call writefile(s:images[s:index % len(s:images)], "/dev/tty", "b")
+    call writefile(["\x1b[u"], "/dev/tty", "b")
+  endif
   let s:index += 1
 endfunction
 
