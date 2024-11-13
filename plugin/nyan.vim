@@ -2,22 +2,13 @@ let s:dir = expand('<sfile>:h:h') . '/data'
 let s:index = 0
 let s:images = []
 let s:offset = get(g:, 'nyancat_offset', 0)
+let s:device = has('win32') ? 'CONOUT$' : '/dev/tty'
 
 function! s:nyan(...)
-  if s:offset > 0
-    let l:col = s:offset
-  else
-    let l:col = &columns - 7 + s:offset
-  endif
-  if has('win32')
-    call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "CONOUT$", "b")
-    call writefile(s:images[s:index % len(s:images)], "CONOUT$", "b")
-    call writefile(["\x1b[u"], "CONOUT$", "b")
-  else
-    call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], "/dev/tty", "b")
-    call writefile(s:images[s:index % len(s:images)], "/dev/tty", "b")
-    call writefile(["\x1b[u"], "/dev/tty", "b")
-  endif
+  let l:col = s:offset > 0 ? s:offset : &columns - 7 + s:offset
+  call writefile([printf("\x1b[s\x1b[%d;%dH", &lines-&cmdheight, l:col)], s:device, "b")
+  call writefile(s:images[s:index % len(s:images)], s:device, "b")
+  call writefile(["\x1b[u"], s:device, "b")
   let s:index += 1
 endfunction
 
