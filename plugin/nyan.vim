@@ -1,3 +1,6 @@
+if has('gui_running')
+  finish
+endif
 let s:dir = expand('<sfile>:h:h') . '/data'
 let s:index = 0
 let s:images = []
